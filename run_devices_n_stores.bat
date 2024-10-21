@@ -1,0 +1,1 @@
+venv\Scripts\python.exe devices_n_stores.py
