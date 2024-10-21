@@ -3,13 +3,12 @@ import aiohttp
 import json
 import logging
 
+from logger_config import LOGGING_CONFIG
+
 # Constants
 EVOTOR_API_BASE_URL = "https://api.evotor.ru/"
 VERSION = "1.0.0"
 
-# Logging configuration
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 # Type hints
 StoresData = list[dict]
@@ -29,7 +28,7 @@ async def get_stores(token: str) -> StoresData:
             if response.status == 200:
                 return await response.json()
             else:
-                logger.error(
+                logging.error(
                     f"Error getting stores: {response.status} - {await response.text()}"
                 )
                 raise aiohttp.ClientError(f"Error getting stores: {response.status}")
@@ -44,7 +43,7 @@ async def get_devices(token: str) -> DevicesData:
             if response.status == 200:
                 return await response.json()
             else:
-                logger.error(
+                logging.error(
                     f"Error getting devices: {response.status} - {await response.text()}"
                 )
                 raise aiohttp.ClientError(f"Error getting devices: {response.status}")
@@ -67,7 +66,7 @@ def format_stores_and_devices(stores: StoresData, devices: DevicesData) -> list[
 async def main():
     """Main function to run the script"""
     try:
-        print(f'\nGetStoresAndDevices v{VERSION}\n')
+        print(f"\nGetStoresAndDevices v{VERSION}\n")
         token = input("Input token, please: ")
         stores = await get_stores(token)
         devices = await get_devices(token)
@@ -76,7 +75,16 @@ async def main():
         print(json.dumps(result, indent=4, ensure_ascii=False))
         input("\nPress Enter to exit...")
     except aiohttp.ClientError as e:
-        logger.error(f"Error: {e}")
+        logging.error(f"Error: {e}")
+        retry = input("An error occurred. Retry? (y/n): ")
+        if retry.lower() == "y":
+            await main()
+        else:
+            logging.info("Exiting...")
+            exit(1)
+    except KeyboardInterrupt:
+        logging.info("Exiting...")
+        exit(0)
 
 
 if __name__ == "__main__":
