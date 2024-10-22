@@ -1,0 +1,1 @@
+venv\Scripts\python.exe get_all_goods.py
