@@ -1,5 +1,4 @@
 import os
-import logging.config
 
 LOG_DIR = "logs"
 LOG_FILE = "get_stores_and_devices.log"
@@ -9,7 +8,7 @@ LOGGING_CONFIG = {
     "disable_existing_loggers": False,
     "formatters": {
         "default": {
-            "format": "%(asctime)s - %(levelname)s - %(message)s - %(name)s",
+            "format": "%(asctime)s - %(levelname)s - %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         }
     },
@@ -35,5 +34,3 @@ LOGGING_CONFIG = {
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
-
-logging.config.dictConfig(LOGGING_CONFIG)

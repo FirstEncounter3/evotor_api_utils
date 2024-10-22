@@ -2,8 +2,11 @@ import asyncio
 import aiohttp
 import json
 import logging
+import logging.config
 
 from logger_config import LOGGING_CONFIG
+
+logging.config.dictConfig(LOGGING_CONFIG)
 
 # Constants
 EVOTOR_API_BASE_URL = "https://api.evotor.ru/"
