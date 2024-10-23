@@ -23,19 +23,23 @@ async def get_all_goods(token: str, store_id: str) -> list[dict]:
     next_cursor = None
     url = f"{EVOTOR_API_BASE_URL}/stores/{store_id}/products"
     params = {}
+    pages_counter = 0
 
     async with aiohttp.ClientSession() as session:
         while True:
             if next_cursor:
-                params = {"next_cursor": next_cursor}
+                params = {"cursor": next_cursor}
             async with session.get(
                 url, headers=get_headers(token), params=params
             ) as response:
                 if response.status == 200:
+                    pages_counter += 1
+                    logging.info(f"Pages processed: {pages_counter}")
                     data = await response.json()
                     goods.extend(data.get("items", []))
 
                     next_cursor = data.get("paging", {}).get("next_cursor")
+                    logging.info(f"Next cursor: {next_cursor}")
                     if not next_cursor:
                         break
                 else:
@@ -58,9 +62,11 @@ async def main():
         print(f"\nGetAllGoods v{VERSION}\n")
         token = input("Input token, please: ")
         store_id = input("Input store_id, please: ")
+        print("Getting all goods. Please wait...")
         goods = await get_all_goods(token, store_id)
-        print("Saved to goods.json")
+        print("Saving to file. Please wait...")
         save_to_file(goods, "goods.json")
+        print("Done!")
         input("\nPress Enter to exit...")
     except aiohttp.ClientError as e:
         logging.error(f"Error: {e}")
